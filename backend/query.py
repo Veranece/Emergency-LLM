@@ -26,7 +26,7 @@ chat = ChatDeepSeek(
     streaming=True, 
 )
 
-query = "足球是什么颜色的？"
+query = "省应急厅、省粮储局按各自职责做好什么工作？"
 docs = documents.similarity_search(query,k=1)
 print(docs[0].page_content)
 prompt = f"""请根据以下文档内容，总结关于'{query}'的信息：

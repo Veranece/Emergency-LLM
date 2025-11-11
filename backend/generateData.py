@@ -6,11 +6,13 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from sentence_transformers import SentenceTransformer
 from langchain_community.document_loaders import Docx2txtLoader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import SpacyTextSplitter
 
 
-loader = Docx2txtLoader()
-documents = loader.load("/home/liziwei/Emergency-LLM/backend/resource/规划.docx")
+# loader = Docx2txtLoader()
+loader = PyPDFLoader("/home/liziwei/Emergency-LLM/backend/resource/省十四届人大三次会议《关于加快应急预案体系建设的建议》（第1431408号）答复.pdf")
+documents = loader.load()
 
 
 model = HuggingFaceEmbeddings(
@@ -33,5 +35,5 @@ vdb = Chroma.from_documents(
     persist_directory="/home/liziwei/Emergency-LLM/backend/vdb"
 )
 
-vdb.persist()
+# vdb.persist()
 print("向量数据库创建成功！")
