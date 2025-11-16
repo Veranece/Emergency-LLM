@@ -11,10 +11,6 @@ documents = Chroma(
             persist_directory="/home/liziwei/Emergency-LLM/backend/vdb",
             embedding_function=embeddings)
 
-# query = "足球是什么颜色的？"
-# docs = documents.similarity_search(query,k=1)
-# print(docs[0].page_content)
-
 chat = ChatDeepSeek(
     model="DeepSeek-R1-32B",
     temperature=0,
@@ -36,4 +32,4 @@ prompt = f"""请根据以下文档内容，总结关于'{query}'的信息：
 
 请用简洁明了的语言进行总结。"""
 
-print(chat.invoke(prompt).content.split("</think>")[1].strip())
+print(chat.invoke(prompt).content)
