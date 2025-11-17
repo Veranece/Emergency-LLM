@@ -4,6 +4,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import Docx2txtLoader, TextLoader, PyPDFLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from processImg import process
 
 # 设置 HuggingFace 镜像
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
