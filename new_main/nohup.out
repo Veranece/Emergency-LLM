@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/zhenghan/model/new_main/app.py", line 2, in <module>
+    from bs4 import BeautifulSoup
+ModuleNotFoundError: No module named 'bs4'
+Traceback (most recent call last):
+  File "/home/zhenghan/model/new_main/app.py", line 2, in <module>
+    from bs4 import BeautifulSoup
+ModuleNotFoundError: No module named 'bs4'

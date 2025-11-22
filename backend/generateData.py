@@ -85,10 +85,10 @@ def csv_to_txt(file_path):
 
 
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=300,
-    chunk_overlap=50,
+    chunk_size=800,          # 增加到 800 字符，保证每个块有完整的信息
+    chunk_overlap=150,        # 增加重叠，避免关键信息在边界丢失
     length_function=len,
-    separators=["\n\n", "\n", ".", "!", "?"]
+    separators=["\n\n", "\n", "。", "！", "？", ".", "!", "?", "；", ";", "，", ","]  # 优先按段落和句子分割
 )
 
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
@@ -112,14 +112,14 @@ for foldername, subfolders, filenames in os.walk(dir_path):
 
         if lower_name.endswith((".png", ".jpg", ".jpeg", ".bmp")):
             txt_file = ocr_image_to_txt(file_path)
-            loader = TextLoader(txt_file)
+            loader = TextLoader(txt_file, encoding='utf-8')
         elif lower_name.endswith((".xls", ".xlsx")):
             txt_file = excel_to_txt(file_path)
-            loader = TextLoader(txt_file)
+            loader = TextLoader(txt_file, encoding='utf-8') if txt_file else None
         elif lower_name.endswith(".csv"):
             txt_file = csv_to_txt(file_path)
             if txt_file:
-                loader = TextLoader(txt_file)
+                loader = TextLoader(txt_file, encoding='utf-8')
             else:
                 continue
         elif lower_name.endswith(".pdf"):
@@ -129,7 +129,27 @@ for foldername, subfolders, filenames in os.walk(dir_path):
             print("加载 DOCX:", file_path)
             loader = Docx2txtLoader(file_path)
         elif lower_name.endswith(".txt"):
-            loader = TextLoader(file_path)
+            # 尝试多种编码加载 TXT 文件
+            encodings = ['utf-8', 'gbk', 'gb2312', 'gb18030', 'latin1']
+            try:
+                import chardet
+                with open(file_path, 'rb') as f:
+                    detected = chardet.detect(f.read())
+                    if detected['encoding']:
+                        encodings.insert(0, detected['encoding'])
+            except: pass
+            
+            for enc in encodings:
+                try:
+                    loader = TextLoader(file_path, encoding=enc)
+                    # 尝试加载验证编码是否正确
+                    _ = loader.load()
+                    break
+                except:
+                    continue
+            else:
+                print(f"无法识别文件编码，跳过: {file_path}")
+                continue
         elif lower_name.endswith((".wps", ".doc")):
             out_file = os.path.splitext(file_path)[0] + ".docx"
             try:
@@ -145,14 +165,42 @@ for foldername, subfolders, filenames in os.walk(dir_path):
         else:
             print("未知格式文件，跳过:", file_path)
             continue
-
-        # 文档切分 & 添加 source 元数据
         if loader:
             try:
+                # 提取文档类型（子文件夹名称）
+                rel_path = os.path.relpath(foldername, dir_path)
+                doc_type = os.path.normpath(rel_path).split(os.sep)[0] if rel_path != '.' else 'Unknown'
+                
                 docs = loader.load_and_split(text_splitter)
+                
+                # 清洗和过滤文档
                 for doc in docs:
+                    content = doc.page_content.strip()
+                    
+                    # 过滤条件
+                    # 1. 长度太短（<20字符）
+                    if len(content) < 20:
+                        continue
+                    
+                    # 2. 只过滤包含乱码替换字符的文档
+                    # � (U+FFFD) 是 Unicode 替换字符，表示无法解码的字节
+                    if '�' in content:
+                        # 统计乱码字符的比例
+                        garbled_count = content.count('�')
+                        # 如果乱码字符超过5个，或者占比超过5%，则跳过
+                        if garbled_count > 5 or (garbled_count / len(content)) > 0.05:
+                            print(f"跳过乱码文档片段（包含{garbled_count}个�字符）: {content[:80]}...")
+                            continue
+                    
+                    # 3. 只包含标点符号和空格（没有实际内容）
+                    has_content = any(c.isalnum() or '\u4e00' <= c <= '\u9fff' for c in content)
+                    if not has_content:
+                        continue
+                    
                     doc.metadata["source"] = file_path
-                all_documents.extend(docs)
+                    doc.metadata["type"] = doc_type
+                    all_documents.append(doc)
+                    
             except Exception as e:
                 print(f"加载失败: {file_path}, 原因: {e}")
 
@@ -165,7 +213,7 @@ if all_documents:
         embedding=embedding_model,
         persist_directory="/home/liziwei/Emergency-LLM/backend/vdb"
     )
-    vdb.persist()
+    # vdb.persist()
     print("向量数据库创建成功！")
 else:
     print("没有找到任何可处理的文件。")

@@ -22,7 +22,7 @@ documents = Chroma(
             embedding_function=embeddings)
 
 
-query = "四不放过”原则是什么"
+# query = "四不放过”原则是什么"
 query = "篷体面料（PU涂层布）需要满足哪些关键性能指标"
 
 docs = documents.similarity_search(query, k=1)
@@ -44,7 +44,7 @@ prompt_case = f"""
 """
 # 让大模型生成回答
 chat_response = client.chat.completions.create(
-     model="/New_Disk/liuyingchang/model/models/Qwen/Qwen3-32B-AWQ",
+    model="/New_Disk/liuyingchang/model/models/Qwen/Qwen3-32B-AWQ",
     messages=[
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt_case}
