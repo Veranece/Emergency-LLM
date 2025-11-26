@@ -1,11 +1,55 @@
-/* 自定义滚动条样式，使其不那么突兀 */
+/* ========== 全局样式 ========== */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========== 自定义滚动条样式 ========== */
+/* 主消息容器滚动条 */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
+    background-clip: padding-box;
+}
+
+/* 侧边栏滚动条 - 深色主题 */
+aside.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(31, 41, 55, 0.3);
+}
+
+aside.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
+    border-radius: 10px;
+}
+
+aside.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(100, 116, 139, 0.9) 0%, rgba(71, 85, 105, 0.9) 100%);
+}
+
+/* 默认滚动条（全局） */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #f3f4f6;
     border-radius: 10px;
 }
 
@@ -15,18 +59,383 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
+    background: #94a3b8;
 }
 
-/* 移除文本输入框的所有阴影效果 */
+/* ========== 文本输入框样式 ========== */
 #message-input {
-    box-shadow: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 50px;
+    max-height: 200px;
+    overflow-y: hidden; /* 隐藏垂直滚动条 */
 }
 
 #message-input:focus {
-    box-shadow: none !important;
+    transform: translateY(-1px);
 }
 
-#message-input:active {
-    box-shadow: none !important;
+#message-input::placeholder {
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+/* 隐藏输入框的滚动条 */
+#message-input::-webkit-scrollbar {
+    display: none;
+}
+
+#message-input {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* ========== 消息动画 ========== */
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.message-enter {
+    animation: messageSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ========== 发送按钮动画 ========== */
+@keyframes sendPulse {
+    0%, 100% {
+        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3), 0 8px 10px -6px rgba(37, 99, 235, 0.3);
+    }
+    50% {
+        box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.4), 0 10px 15px -6px rgba(37, 99, 235, 0.4);
+    }
+}
+
+#send-button:not(:disabled):hover {
+    animation: sendPulse 2s ease-in-out infinite;
+}
+
+/* ========== 加载动画 ========== */
+@keyframes thinking {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+.animate-thinking {
+    animation: thinking 1.5s ease-in-out infinite;
+}
+
+/* ========== 装饰性元素 ========== */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.float-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* ========== 渐变文字效果 ========== */
+.gradient-text {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========== 响应式优化 ========== */
+@media (max-width: 640px) {
+    #message-input {
+        font-size: 16px; /* 防止移动端自动缩放 */
+    }
+}
+
+/* ========== 玻璃态效果 ========== */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-effect-dark {
+    background: rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* ========== 按钮涟漪效果 ========== */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.button-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.button-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+}
+
+.button-ripple:active::after {
+    animation: ripple 0.6s ease-out;
+}
+
+/* ========== 选择文本颜色 ========== */
+::selection {
+    background-color: rgba(37, 99, 235, 0.2);
+    color: inherit;
+}
+
+::-moz-selection {
+    background-color: rgba(37, 99, 235, 0.2);
+    color: inherit;
+}
+
+/* ========== 禁用状态样式 ========== */
+button:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* ========== 焦点可见性 ========== */
+*:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+/* ========== 平滑滚动 ========== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ========== 消息容器样式增强 ========== */
+#message-container {
+    scroll-behavior: smooth;
+}
+
+/* 用户消息气泡 */
+.user-message {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    transition: all 0.3s ease;
+}
+
+.user-message:hover {
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    transform: translateY(-1px);
+}
+
+/* AI消息气泡 */
+.ai-message {
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+    transition: left 0.5s ease;
+}
+
+.ai-message:hover::before {
+    left: 100%;
+}
+
+.ai-message:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+
+/* ========== 打字机效果 ========== */
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+/* ========== 快捷按钮悬停效果 ========== */
+footer button:hover {
+    transform: translateY(-2px);
+}
+
+footer button:active {
+    transform: translateY(0);
+}
+
+/* ========== 侧边栏链接动画 ========== */
+aside nav a {
+    position: relative;
+    overflow: hidden;
+}
+
+aside nav a::before {
+    content: '';
+    position: absolute;
+    left: -100%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    transition: left 0.3s ease;
+}
+
+aside nav a:hover::before {
+    left: 0;
+}
+
+/* ========== 发送按钮图标旋转 ========== */
+#send-button svg {
+    transition: transform 0.3s ease;
+}
+
+#send-button:hover svg {
+    transform: rotate(-45deg) scale(1.1);
+}
+
+#send-button:active svg {
+    transform: rotate(-45deg) scale(0.95);
+}
+
+/* ========== 头像脉冲效果 ========== */
+@keyframes avatarPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+    }
+}
+
+.avatar-pulse {
+    animation: avatarPulse 2s infinite;
+}
+
+/* ========== 加载骨架屏 ========== */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* ========== 消息时间戳样式 ========== */
+.message-timestamp {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.message-enter:hover .message-timestamp,
+[id^="ai-message-"]:hover .message-timestamp {
+    opacity: 1;
+}
+
+/* ========== 快捷指令按钮脉冲 ========== */
+@keyframes buttonPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+footer button:nth-child(4) {
+    animation: buttonPulse 2s ease-in-out infinite;
+}
+
+/* ========== 移动端优化 ========== */
+@media (max-width: 640px) {
+    .message-enter {
+        animation-duration: 0.3s;
+    }
+    
+    #message-container {
+        padding: 1rem;
+    }
+    
+    footer {
+        padding: 1rem;
+    }
+}
+
+/* ========== 深色模式准备 ========== */
+@media (prefers-color-scheme: dark) {
+    /* 未来可以在这里添加深色模式样式 */
+}
+
+/* ========== 无障碍优化 ========== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========== 打印样式 ========== */
+@media print {
+    aside,
+    footer,
+    header button {
+        display: none !important;
+    }
+    
+    #message-container {
+        overflow: visible !important;
+        max-height: none !important;
+    }
 }
