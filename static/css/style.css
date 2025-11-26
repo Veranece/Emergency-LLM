@@ -1,0 +1,32 @@
+/* 自定义滚动条样式，使其不那么突兀 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* 移除文本输入框的所有阴影效果 */
+#message-input {
+    box-shadow: none !important;
+}
+
+#message-input:focus {
+    box-shadow: none !important;
+}
+
+#message-input:active {
+    box-shadow: none !important;
+}

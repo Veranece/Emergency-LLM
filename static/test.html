@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应急智能体问答界面</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // 使用Inter字体，确保良好的可读性
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
+                    },
+                    colors: {
+                        // 定义应急主题色
+                        'emergency-blue': {
+                            '50': '#f0f6ff',
+                            '100': '#e0edff',
+                            '200': '#c7dfff',
+                            '300': '#a3c7ff',
+                            '400': '#7aa7ff',
+                            '500': '#528bff',
+                            '600': '#366ff4', // 主色
+                            '700': '#295ad8',
+                            '800': '#2549ac',
+                            '900': '#233f8a',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased h-full"> <!-- 调整了body背景色 -->
+
+    <div class="flex h-full max-h-screen">
+
+        <!-- 侧边栏: 改为深色背景 -->
+        <aside class="w-64 bg-gray-900 text-gray-300 flex-col hidden sm:flex">
+            <div class="p-4 border-b border-gray-700"> <!-- 调整了边框色 -->
+                <h1 class="text-xl font-bold text-white">应急智能体</h1> <!-- 调整了文本色 -->
+                <span class="text-xs text-gray-400">v1.0 - 专业问答</span> <!-- 调整了文本色 -->
+            </div>
+
+            <div class="p-4">
+                <!-- 增加了渐变和阴影 -->
+                <button class="w-full bg-gradient-to-r from-emergency-blue-600 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-emergency-blue-700 hover:to-blue-600 transition-all shadow-lg hover:shadow-md flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    新的会话
+                </button>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto px-4 space-y-2">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">历史记录</h3> <!-- 调整了文本色 -->
+
+                <!-- 调整了高亮和普通链接的样式 -->
+                <a href="#" class="block px-3 py-2 rounded-lg bg-emergency-blue-700 text-white font-medium">
+                    城东化工厂泄露 (2)
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white">
+                    高速公路G50拥堵 (5)
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white">
+                    SOP - 地震救援
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white">
+                    台风"海马"路径查询
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-gray-700"> <!-- 调整了边框色 -->
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white"> <!-- 调整了头像背景色 -->
+                        李
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-semibold text-gray-100">李指挥</p> <!-- 调整了文本色 -->
+                        <p class="text-xs text-gray-400">ID: 800123</p> <!-- 调整了文本色 -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主聊天界面 -->
+        <main class="flex-1 flex flex-col max-h-screen">
+
+            <!-- 聊天界面头部: 增加了阴影代替边框 -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center z-10">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">城东化工厂泄露</h2>
+                    <p class="text-sm text-gray-500">
+                        状态: <span class="text-red-600 font-medium">紧急处理中</span>
+                    </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 8.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 消息显示区域: 调整了背景色 -->
+            <div id="message-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 bg-gray-100">
+
+                <!-- ========== 消息示例（已注释） ==========
+                <div class="flex justify-end">
+                    <div class="max-w-xl lg:max-w-2xl">
+                        <div class="p-3 bg-emergency-blue-600 text-white rounded-xl shadow-md">
+                            <p>
+                                报告：城东化工厂发生不明气体泄露，可能是什么物质？我需要立刻知道疏散范围和SOP。
+                            </p>
+                        </div>
+                        <p class="text-xs text-gray-500 text-right mt-1">李指挥 - 14:02</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-start">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emergency-blue-600 to-blue-500 text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mr-3 shadow-lg">
+                        AI
+                    </div>
+                    <div class="max-w-xl lg:max-w-2xl">
+                        <div class="p-4 bg-white rounded-xl shadow-md space-y-4">
+
+                            <p class="text-gray-800">
+                                收到。正在分析城东化工厂备案物料... 匹配到高风险物质：<strong class="text-red-700">液氯 (Liquid Chlorine)</strong>。
+                            </p>
+
+                            <div class="bg-red-50 border-l-4 border-red-500 text-red-800 p-3 rounded-lg">
+                                <h4 class="font-bold">!! 高度危险警告 !!</h4>
+                                <p class="text-sm">液氯泄露会迅速气化，形成高浓度氯气，有毒、具腐蚀性且窒息性。必须立即采取行动。</p>
+                            </div>
+
+                            <div class="border-t pt-3">
+                                <h5 class="font-semibold text-gray-900 mb-2">1. 立即疏散范围</h5>
+                                <p class="text-sm text-gray-700">基于实时风向（东南风 3级）和泄露模型计算：</p>
+                                <ul class="list-disc list-outside text-sm text-gray-700 pl-6 mt-2 space-y-1">
+                                    <li><strong>主要危险区 (下风向):</strong> 1.5 公里</li>
+                                    <li><strong>警戒区 (周边):</strong> 3.0 公里</li>
+                                </ul>
+                            </div>
+
+                            <div class="border-t pt-3">
+                                <h5 class="font-semibold text-gray-900 mb-2">2. 应急处置SOP (SOP-CHEM-03)</h5>
+                                <ol class="list-decimal list-outside text-sm text-gray-700 pl-6 space-y-2">
+                                    <li>所有人员<strong class="text-red-700">必须</strong>佩戴A级防化服和正压式空气呼吸器 (SCBA)。</li>
+                                    <li>抢险组从<strong class="font-medium">上风向</strong>接近泄露点。</li>
+                                    <li>使用雾状水喷淋稀释和吸收空气中的氯气，但<strong class="text-red-700">避免</strong>水流直接冲击液氯。</li>
+                                    <li>立即通知下游水厂和周边企业暂停取水。</li>
+                                </ol>
+                            </div>
+
+                            <div class="border-t pt-3">
+                                <h5 class="font-semibold text-gray-900 mb-2">3. 实时疏散路径图 (模拟)</h5>
+                                <div class="w-full h-48 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200">
+                                    <p class="text-gray-500">[此处为动态生成的疏散地图]</p>
+                                </div>
+                                <button class="text-sm text-emergency-blue-600 hover:underline mt-2">在新窗口中打开交互地图</button>
+                            </div>
+
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">智能体 - 14:03</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <div class="max-w-xl lg:max-w-2xl">
+                        <div class="p-3 bg-emergency-blue-600 text-white rounded-xl shadow-md">
+                            <p>
+                                收到。调取附近所有消防站的A级防化服库存。
+                            </p>
+                        </div>
+                        <p class="text-xs text-gray-500 text-right mt-1">李指挥 - 14:04</p>
+                    </div>
+                </div>
+                ========== 消息示例结束 ========== -->
+
+            </div>
+
+            <!-- 输入区域 -->
+            <footer class="bg-white border-t border-gray-200 p-4">
+
+                <!-- 快捷指令按钮: 调整为"芯片"样式 -->
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <button class="px-3 py-1 bg-white text-gray-600 text-sm rounded-full hover:bg-gray-50 border border-gray-300 hover:border-gray-400 transition-all">
+                        查询SOP
+                    </button>
+                    <button class="px-3 py-1 bg-white text-gray-600 text-sm rounded-full hover:bg-gray-50 border border-gray-300 hover:border-gray-400 transition-all">
+                        调动资源
+                    </button>
+                    <button class="px-3 py-1 bg-white text-gray-600 text-sm rounded-full hover:bg-gray-50 border border-gray-300 hover:border-gray-400 transition-all">
+                        分析风险
+                    </button>
+                    <button class="px-3 py-1 bg-red-50 text-red-700 text-sm rounded-full hover:bg-red-100 border border-red-200 hover:border-red-300 transition-all">
+                        上报事件
+                    </button>
+                </div>
+
+                <!-- 文本输入 -->
+                <div class="flex items-start space-x-3">
+                    <textarea
+                        id="message-input"
+                        rows="1"
+                        class="flex-1 p-3 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none resize-none focus:bg-white transition-all"
+                        placeholder="输入您的问题或指令..."
+                        oninput="autoResize(this)"
+                    ></textarea>
+                    <!-- 发送按钮: 增加了渐变, 圆角 -->
+                    <button id="send-button" class="bg-gradient-to-r from-emergency-blue-600 to-blue-500 text-white px-5 py-3 rounded-xl font-semibold hover:from-emergency-blue-700 hover:to-blue-600 transition-all h-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                        </svg>
+                    </button>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- 引入自定义JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html>
