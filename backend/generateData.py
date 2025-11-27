@@ -98,9 +98,6 @@ embedding_model = HuggingFaceEmbeddings(
     encode_kwargs={"normalize_embeddings": True}
 )
 
-# =======================
-# 遍历目录处理文件
-# =======================
 dir_path = '/home/liziwei/Emergency-LLM/backend/resource/data'
 all_documents = []
 
@@ -204,9 +201,6 @@ for foldername, subfolders, filenames in os.walk(dir_path):
             except Exception as e:
                 print(f"加载失败: {file_path}, 原因: {e}")
 
-# =======================
-# 创建向量数据库
-# =======================
 if all_documents:
     vdb = Chroma.from_documents(
         documents=all_documents,

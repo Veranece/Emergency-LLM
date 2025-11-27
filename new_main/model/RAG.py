@@ -29,8 +29,11 @@ import jieba
 os.environ['VLLM_USE_MODELSCOPE']='True'
 os.environ["LD_LIBRARY_PATH"] = ""
 
-openai_api_key = "EMPTY"
-openai_api_base = "http://localhost:8000/v1"
+# openai_api_key = "EMPTY"
+openai_api_key = "token-abc123"
+
+# openai_api_base = "http://localhost:8000/v1"
+openai_api_base = "http://218.199.69.58:8888/v1"
 
 client = OpenAI(
     api_key=openai_api_key,
@@ -218,10 +221,25 @@ class Agent():
         用户克服了基于距离的相似性搜索的一些局限性。
         提供这些用换行符分隔的备选问题或分块，返回你生成的问题和分块，生成的问题为1、2、3，生成分块为4和5，一个分块是4，一个分块是5，一个分块是一个关键字，一个分块是关键字
         你需要返回的是3个问题和2个分块其他不需要！！！
+                1.
+                2.
+                3.
+                4.
+                5.
+                -----------
+                用户问题：{query}
         """)
         prompt = qa_system_prompt.format(query = query)
+        # response = client.chat.completions.create(
+        #     model="/New_Disk/liuyingchang/model/models/Qwen/Qwen3-32B-AWQ",
+        #     messages=[
+        #         {"role": "system", "content": "你是一名应急管理领域的专业顾问。"},
+        #         {"role": "user", "content": prompt}
+        #     ],
+        #     stream=True
+        # )
         response = client.chat.completions.create(
-            model="/New_Disk/liuyingchang/model/models/Qwen/Qwen3-32B-AWQ",
+            model="qwen",
             messages=[
                 {"role": "system", "content": "你是一名应急管理领域的专业顾问。"},
                 {"role": "user", "content": prompt}
@@ -231,21 +249,18 @@ class Agent():
         print("获取响应流")
         full_content = ""
         for chunk in response:
-            # 处理 content 字段
+            # print("chunk",chunk)
             if hasattr(chunk.choices[0].delta, 'content') and chunk.choices[0].delta.content:
                 full_content += chunk.choices[0].delta.content
-            # 处理 reasoning_content 字段（Qwen3 模型的思考过程）
             elif hasattr(chunk.choices[0].delta, 'reasoning_content') and chunk.choices[0].delta.reasoning_content:
                 full_content += chunk.choices[0].delta.reasoning_content
         full = full_content
+        # print("full",full)
 
 
         text_no_think = re.sub(r'<think>.*?</think>', '', full_content, flags=re.S).strip()
 
-        # 2. 按行切分，并去掉空行
         lines = [line.strip() for line in text_no_think.splitlines() if line.strip()]
-        
-        # 3. 只保留以数字开头的行（1. 2. 3. 4. 5.）
         filtered_lines = []
         seen_numbers = set()
         
@@ -262,7 +277,6 @@ class Agent():
         
         # 确保返回的结果按编号排序
         filtered_lines.sort(key=lambda x: int(re.match(r'^(\d+)\.', x).group(1)))
-        
         return filtered_lines
 
 
@@ -276,7 +290,8 @@ class Agent():
         """
         print("query:",query)
         queries = self.create_original_query(query)
-        data = self.create_documents(query)
+        print("queries",queries)
+        data = self.create_documents(queries)
         print("data:",data)
         query_result = "\n\n".join(item['document'] for item in data)
         system_prompt = "你是应急管理领域的专业顾问，请根据用户提供的上下文回答问题，回答要专业、条理清晰。"
@@ -292,7 +307,7 @@ class Agent():
         {query}
         """
         response = client.chat.completions.create(
-            model="/New_Disk/liuyingchang/model/models/Qwen/Qwen3-32B-AWQ",
+            model="qwen",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt_normal}
@@ -576,13 +591,6 @@ class Agent():
 if __name__ == '__main__':
     agent = Agent()
     gens=agent.retrival_func_02("信息学院院长是谁?",'')
-    # print("-----------------------")
-    # print(agent.retrival_func_01("信息学院院长是谁?",''))
-    # gens = agent.create_original_query("信息学院院长是谁?")
-    # full = next(gens)
-    # for chunk in gens:
-    #     full += chunk
-    #     print(chunk.content,end="")
     full_text = ""
     for chunk in gens:
         # 处理 content 字段（正常内容）
@@ -596,47 +604,6 @@ if __name__ == '__main__':
             full_text += reasoning
             print(reasoning, end="")
     
-    # print(agent.query("信息学院院长是谁?",''))
-    # print(agent.search_func(x=1,query="谁是华中农业大学校长"))
-    # res = generic_func("谁是华中农业大学校长")
-    # for re in res:
-    #      print(re.text(),end="")
-
-    # while(True):
-    #     print("请输入你的问题（输入'退出'结束程序）：")
-    #     query = input()
-    #     if query == '退出':
-    #         break
-        
-    #     gens = agent.retrival_func_01(query,history="")
-        # result = agent.query(query=query,history='')
-        # print(result)
-    #     # start_time = time.time()
-        # for gen in gens:
-        #     print(gen.text(),end="")
-        # end_time = time.time()
-        # print(end_time-start_time)
-
-    # create_documents("信息学院院长是谁")
-    # 华中农业大学有几个食堂
-    # 湖北有几个城市
-    # 2025年4月12号武汉天气
-    # 测试生成query
-    # print(create_original_query("华中农业大学国家级大学生创新创业训练计划管理办法？"))
-    # 测试cross encoding
-    # queries = create_original_query("信息学院的研究生辅导员是谁？")信息学院的辅导员是谁？
-    # print(queries)
-    # print(create_documents(queries))
     gr.ChatInterface(agent.retrival_func_02, type="messages").launch(share=True,server_name='0.0.0.0', server_port=7879)
-    # 信息学院院长是谁 介绍一下华中农业大学张红雨教授
-    # 信息学院副院长都是谁 https://cn.bing.com/search?q=%E5%8D%8E%E4%B8%AD%E5%86%9C%E4%B8%9A%E5%A4%A7%E5%AD%A6%E6%A0%A1%E9%95%BF%E6%98%AF%E8%B0%81
-    # 华中农业大学校长是谁 大学生科技创新基金项目，统一资助额度多少
-#   CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server --model /home/jiaowu/model/Qwen/Qwen2___5-14B-Instruct --served-model-name qwen --dtype=half > vllm_test.out &
-#   CUDA_VISIBLE_DEVICES=0,1,2,3 python -m vllm.entrypoints.openai.api_server --model /home/jiaowu/model/model/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B --served-model-name qwen --dtype=half > vllm_test.out &
-    # print(retrival_func("华中农业大学获批了多少项国家级新农科研究与改革实践项目？"))
-    # CUDA_VISIBLE_DEVICES=1,2 python -m vllm.entrypoints.openai.api_server --model /home/jiaowu/llama/try/merge_lora_qwen --served-model-name qwen --dtype=half --tensor-parallel-size 2 > vllm_test.out &
-    
-# CUDA_VISIBLE_DEVICES=0,1 python -m vllm.entrypoints.openai.api_server --model /home/chenzhenghan/czh/14b --served-model-name qwen --dtype=half --max-model-len 2048 --host 0.0.0.0 --port 8000 > vllm_test.out &
-
 
    
