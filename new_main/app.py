@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 import os
-import model.service as service
 from flask_cors import CORS  
 from flask import Flask, request, jsonify, send_from_directory, Response, stream_with_context
 import requests
@@ -11,6 +10,16 @@ import pathlib
 # os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 app = Flask(__name__, static_folder='static')
+
+# 在Flask应用创建后立即导入service模块，触发Agent和BM25索引的初始化
+# 这样可以在应用启动时就完成索引加载，避免第一次请求时的延迟
+print("=" * 60)
+print("开始加载模型和索引...")
+print("=" * 60)
+import model.service as service
+print("=" * 60)
+print("模型和索引加载完成，应用已就绪！")
+print("=" * 60)
 
 CORS(app, resources={
     r"/*": {

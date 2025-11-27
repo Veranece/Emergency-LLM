@@ -1,15 +1,14 @@
 # from .test_search import Agent
 from .RAG import Agent
 
-# 全局单例Agent实例，只初始化一次
-_agent_instance = None
+# 全局单例Agent实例，在模块加载时就初始化
+print("正在初始化Agent实例（包括BM25索引）...")
+_agent_instance = Agent()
+print("Agent实例初始化完成！")
 
 def _get_agent():
     """获取Agent单例实例"""
     global _agent_instance
-    if _agent_instance is None:
-        print("首次初始化Agent实例...")
-        _agent_instance = Agent()
     return _agent_instance
 
 # 将本函数替换为模型的入口函数

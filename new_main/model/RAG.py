@@ -1,14 +1,9 @@
-# -*- coding: utf-8 -*-
-# 使用旧版langchain的导入路径
-# 在新版langchain中，这些组件已经移动到langchain_classic.agents
+
 from langchain_classic.agents import ZeroShotAgent, AgentExecutor, Tool, initialize_agent
 from langchain_classic.agents.agent_types import AgentType
 import gradio as gr
 import re
 from langchain_classic.memory import ConversationBufferMemory
-# 删除hub导入
-# import time
-# from bs4 import BeautifulSoup
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from sentence_transformers import CrossEncoder
@@ -151,16 +146,11 @@ class Agent():
         doc_strings = [doc["document"] for doc in docs]
         return "".join(doc_strings)
     def create_documents(self,queries):
-        """
-        混合检索文档（BM25 + 向量检索）
-        
-        Args:
-            queries: 查询列表
-        """
         retrieved_documents = []
         
         for query in queries:
             # 1. BM25 检索
+            type = "Technology"
             tokenized_query = list(jieba.cut(query))
             bm25_scores = self.bm25.get_scores(tokenized_query)
             
@@ -168,22 +158,25 @@ class Agent():
             bm25_top_indices = np.argsort(bm25_scores)[::-1][:10]
             bm25_docs = []
             for idx in bm25_top_indices:
-                if self.all_doc_metadatas[idx].get("type") == "Technology":
+                if self.all_doc_metadatas[idx].get("type") == type:
                     bm25_docs.append(self.all_doc_contents[idx])
                     if len(bm25_docs) >= 5:  # 最多取 5 个
                         break
             
             # 2. 向量检索
+            # type如何在哪定义呢
             results_vector = self.documents.similarity_search_with_relevance_scores(
                 query, 
                 k=5,
-                filter={"type": "Technology"}
+                filter={"type": type}
             )
             
             # 打印来源信息
             if results_vector:
                 source = results_vector[0][0].metadata.get("source", "未知来源")
+                typ = results_vector[0][0].metadata.get("type", "未知类型")
                 print(f"来源：{source.split('/')[-1] if '/' in source else source}")
+                print(f"类型：{typ}")
             
             vector_docs = [doc[0].page_content for doc in results_vector]
             
