@@ -280,23 +280,27 @@ class Agent():
             tokenized_query = list(jieba.cut(query))
             bm25_scores = self.bm25.get_scores(tokenized_query)
             
-            # 获取 BM25 top-20 结果并应用元数据过滤
-            bm25_top_indices = np.argsort(bm25_scores)[::-1][:20]
+            # 获取 BM25 top-15 结果并应用元数据过滤
+            bm25_top_indices = np.argsort(bm25_scores)[::-1][:15]
             bm25_docs = []
             for idx in bm25_top_indices:
                 doc_type = self.all_doc_metadatas[idx].get("type")
                 if doc_type in target_types:
                     bm25_docs.append(self.all_doc_contents[idx])
-                    if len(bm25_docs) >= 5:  # 最多取 5 个
+                    if len(bm25_docs) >= 3:  # 最多取 3 个
                         break
             
             # 2. 向量检索（支持多类型）
             vector_docs = []
+            # 根据类型数量动态调整每个类型的检索数量
+            # 避免多路召回时检索过多文档
+            k_per_type = 1 if len(target_types) >= 3 else 2  # 3个以上类型时每个只取1个
+            
             for doc_type in target_types:
                 try:
                     results_vector = self.documents.similarity_search_with_relevance_scores(
                         query, 
-                        k=3,  # 每个类型取3个
+                        k=k_per_type,
                         filter={"type": doc_type}
                     )
                     vector_docs.extend([doc[0].page_content for doc in results_vector])
@@ -410,11 +414,13 @@ class Agent():
         """
         print("query:",query)
         queries = self.create_original_query(query)
+        queries.insert(0, query)  # 将原始query加入到queries列表开头
         print("queries",queries)
         data = self.create_documents(queries)
         print("data:",data)
         query_result = "\n\n".join(item['document'] for item in data)
-        system_prompt = "你是应急管理领域的专业顾问，请根据用户提供的上下文回答问题，回答要专业、条理清晰。"
+        print("query_result:",query_result)
+        system_prompt = "你是应急管理领域的专业顾问，请根据用户提供的上下文回答问题，回答要专业、条理清晰。只根据上下文回答，不要自己编造内容。"
         prompt_normal = f"问题: {query}\n\n背景知识:\n{query_result}"
         prompt_case = f"""
         1.请结合以下背景知识，针对给定情景输出所需装备参数、操作流程及注意事项，要求专业、条理清晰：
