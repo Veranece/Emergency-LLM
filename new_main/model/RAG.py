@@ -145,40 +145,167 @@ class Agent():
     def format(docs):
         doc_strings = [doc["document"] for doc in docs]
         return "".join(doc_strings)
-    def create_documents(self,queries):
+    
+    def classify_query_intent(self, query, use_llm=False):
+        """
+        查询意图分类器（支持规则和LLM两种模式）
+        返回最相关的文档类型列表（按优先级排序）
+        
+        文档类型说明：
+        - Case: 案例、事故、事件
+        - PopSci: 科普知识、常识、原理
+        - Regulation: 法规、条例、规定、标准
+        - Technology: 技术、操作、装备、方法
+        
+        Args:
+            query: 用户查询
+            use_llm: 是否使用LLM进行分类（更准确但更慢）
+        """
+        if use_llm:
+            return self._classify_by_llm(query)
+        else:
+            return self._classify_by_rules(query)
+    
+    def _classify_by_rules(self, query):
+        """基于关键词规则的分类（快速，推荐）"""
+        query_lower = query.lower()
+        
+        # 定义各类型的关键词（可以根据实际情况扩展）
+        keywords = {
+            "Case": [
+                "案例", "事故", "事件", "发生", "经历", "实例", "例子",
+                "曾经", "历史", "真实", "故事", "教训", "经验", "典型"
+            ],
+            "PopSci": [
+                "是什么", "为什么", "怎么回事", "原理", "原因", "科普",
+                "知识", "了解", "介绍", "概念", "定义", "解释", "常识",
+                "什么是", "含义", "意思"
+            ],
+            "Regulation": [
+                "法规", "条例", "规定", "标准", "规范", "制度", "政策",
+                "法律", "要求", "规章", "办法", "准则", "依据", "文件",
+                "规程", "细则", "通知", "公告"
+            ],
+            "Technology": [
+                "怎么办", "如何", "方法", "措施", "操作", "步骤", "流程",
+                "装备", "工具", "技术", "处理", "应对", "预防", "救援",
+                "使用", "实施", "执行", "参数", "注意事项", "指南",
+                "手册", "指导", "程序", "方案"
+            ]
+        }
+        
+        # 计算每个类型的匹配分数
+        scores = {}
+        for doc_type, words in keywords.items():
+            score = sum(1 for word in words if word in query)
+            scores[doc_type] = score
+        
+        # 按分数排序，返回有分数的类型
+        sorted_types = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+        
+        # 如果最高分为0，说明没有明确匹配，返回所有类型（多路召回）
+        if sorted_types[0][1] == 0:
+            print(f"⚠️  未匹配到明确类型，使用多路召回策略")
+            return ["Case", "PopSci", "Regulation", "Technology"]
+        
+        # 返回得分 > 0 的类型
+        result_types = [t for t, s in sorted_types if s > 0]
+        
+        # # 如果只匹配到一个类型，为了保险起见，也加入得分第二的类型
+        # if len(result_types) == 1 and len(sorted_types) > 1:
+        #     result_types.append(sorted_types[1][0])
+        
+        print(f"🎯 查询意图分类(规则): {query[:30]}... -> {result_types} (得分: {dict(sorted_types)})")
+        return result_types
+    
+    def _classify_by_llm(self, query):
+        """基于LLM的分类（准确但较慢，可选）"""
+        prompt = f"""请分析以下用户问题，判断应该从哪些类型的文档中检索信息。
+
+文档类型说明：
+- Case: 案例、事故、事件的实例
+- PopSci: 科普知识、原理解释、概念介绍
+- Regulation: 法规、条例、规定、标准
+- Technology: 技术方法、操作步骤、装备使用
+
+用户问题：{query}
+
+请返回1-4个最相关的类型，用逗号分隔，只返回类型名称，不要其他内容。
+例如：Technology,Case 或 PopSci 或 Regulation,Technology
+
+输出："""
+        
+        try:
+            response = client.chat.completions.create(
+                model="qwen",
+                messages=[
+                    {"role": "system", "content": "你是一个文档分类助手。"},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                max_tokens=50
+            )
+            
+            result = response.choices[0].message.content.strip()
+            # 解析返回的类型
+            types = [t.strip() for t in result.split(',')]
+            # 过滤有效类型
+            valid_types = [t for t in types if t in ["Case", "PopSci", "Regulation", "Technology"]]
+            
+            if not valid_types:
+                print(f"⚠️  LLM分类失败，使用多路召回")
+                return ["Case", "PopSci", "Regulation", "Technology"]
+            
+            print(f"🎯 查询意图分类(LLM): {query[:30]}... -> {valid_types}")
+            return valid_types
+            
+        except Exception as e:
+            print(f"⚠️  LLM分类出错: {e}，回退到规则分类")
+            return self._classify_by_rules(query)
+    
+    def create_documents(self, queries):
+        """
+        混合检索文档（BM25 + 向量检索 + 智能类型选择）
+        
+        Args:
+            queries: 查询列表
+        """
         retrieved_documents = []
         
         for query in queries:
-            # 1. BM25 检索
-            type = "Technology"
+            # 智能判断文档类型
+            target_types = self.classify_query_intent(query)
+            
+            # 1. BM25 检索（支持多类型）
             tokenized_query = list(jieba.cut(query))
             bm25_scores = self.bm25.get_scores(tokenized_query)
             
-            # 获取 BM25 top-10 结果并应用元数据过滤
-            bm25_top_indices = np.argsort(bm25_scores)[::-1][:10]
+            # 获取 BM25 top-20 结果并应用元数据过滤
+            bm25_top_indices = np.argsort(bm25_scores)[::-1][:20]
             bm25_docs = []
             for idx in bm25_top_indices:
-                if self.all_doc_metadatas[idx].get("type") == type:
+                doc_type = self.all_doc_metadatas[idx].get("type")
+                if doc_type in target_types:
                     bm25_docs.append(self.all_doc_contents[idx])
                     if len(bm25_docs) >= 5:  # 最多取 5 个
                         break
             
-            # 2. 向量检索
-            # type如何在哪定义呢
-            results_vector = self.documents.similarity_search_with_relevance_scores(
-                query, 
-                k=5,
-                filter={"type": type}
-            )
+            # 2. 向量检索（支持多类型）
+            vector_docs = []
+            for doc_type in target_types:
+                try:
+                    results_vector = self.documents.similarity_search_with_relevance_scores(
+                        query, 
+                        k=3,  # 每个类型取3个
+                        filter={"type": doc_type}
+                    )
+                    vector_docs.extend([doc[0].page_content for doc in results_vector])
+                except Exception as e:
+                    print(f"⚠️  向量检索 {doc_type} 类型时出错: {e}")
+                    continue
             
-            # 打印来源信息
-            if results_vector:
-                source = results_vector[0][0].metadata.get("source", "未知来源")
-                typ = results_vector[0][0].metadata.get("type", "未知类型")
-                print(f"来源：{source.split('/')[-1] if '/' in source else source}")
-                print(f"类型：{typ}")
-            
-            vector_docs = [doc[0].page_content for doc in results_vector]
+            # 打印检索统计信息
+            print(f"✓ 检索到 BM25: {len(bm25_docs)} 个, 向量: {len(vector_docs)} 个文档")
             
             # 3. 合并 BM25 和向量检索结果
             retrieved_documents.extend(bm25_docs)
