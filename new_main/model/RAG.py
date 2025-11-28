@@ -337,7 +337,7 @@ class Agent():
         
         # 排序并返回 top-5
         sorted_results = sorted(final_results, key=lambda x: x["score"], reverse=True)
-        return sorted_results[:5]
+        return sorted_results[:2]
 
     def create_original_query(self,original_query):
         query = original_query
