@@ -101,9 +101,10 @@ class LCEmbedding(EmbeddingFunction):
 embedding_model = LCEmbedding(embed_model)
 
 
-local_model_path = "/New_Disk/liziwei/maidalun1020/bce-reranker-base_v1"
+# local_model_path = "/New_Disk/liziwei/maidalun1020/bce-reranker-base_v1"
+local_model_path = "/New_Disk/liziwei/maidalun1020/bge-reranker-large"
 # 重排也有了 也有了索引搜索。 等着整点混合检索
-cross_encoder = CrossEncoder(local_model_path,max_length=512)   
+cross_encoder = CrossEncoder(local_model_path,max_length=512,device="cuda")   
 
 class Agent():
     def __init__(self):
@@ -162,8 +163,10 @@ class Agent():
             use_llm: 是否使用LLM进行分类（更准确但更慢）
         """
         if use_llm:
+            print("使用LLM进行分类")
             return self._classify_by_llm(query)
         else:
+            print("使用规则进行分类")
             return self._classify_by_rules(query)
     
     def _classify_by_rules(self, query):
@@ -274,7 +277,7 @@ class Agent():
         
         for query in queries:
             # 智能判断文档类型
-            target_types = self.classify_query_intent(query)
+            target_types = self.classify_query_intent(query,use_llm=True)
             
             # 1. BM25 检索（支持多类型）
             tokenized_query = list(jieba.cut(query))
@@ -294,7 +297,8 @@ class Agent():
             vector_docs = []
             # 根据类型数量动态调整每个类型的检索数量
             # 避免多路召回时检索过多文档
-            k_per_type = 1 if len(target_types) >= 3 else 2  # 3个以上类型时每个只取1个
+            # k_per_type = 1 if len(target_types) >= 3 else 2  # 3个以上类型时每个只取1个
+            k_per_type = 2
             
             for doc_type in target_types:
                 try:
@@ -415,17 +419,27 @@ class Agent():
         print("query:",query)
         queries = self.create_original_query(query)
         queries.insert(0, query)  # 将原始query加入到queries列表开头
+        queries = queries[:-2]
         print("queries",queries)
         data = self.create_documents(queries)
         print("data:",data)
+        print("len(data):",len(data))
         query_result = "\n\n".join(item['document'] for item in data)
-        print("query_result:",query_result)
+        # print("query_result:",query_result)
         system_prompt = "你是应急管理领域的专业顾问，请根据用户提供的上下文回答问题，回答要专业、条理清晰。只根据上下文回答，不要自己编造内容。"
-        prompt_normal = f"问题: {query}\n\n背景知识:\n{query_result}"
+        prompt_normal = f"""
+        1.请结合以下背景知识，回答用户问题，回答要专业、条理清晰.
+        2.如果上下文不够准确，请返回 ‘我不确定 / 没有足够信息’
+        3.只总结和问题直接相关的内容，一些并不重要的内容无需总结。
+        4.不要自己编造内容
+        问题: {query}\n
+        背景知识:\n{query_result}
+        """
         prompt_case = f"""
         1.请结合以下背景知识，针对给定情景输出所需装备参数、操作流程及注意事项，要求专业、条理清晰：
         2.如果上下文不够准确，请返回 ‘我不确定 / 没有足够信息’
-
+        3.只总结和情景描述相关的内容，一些并不重要的内容无需总结。
+        4.不要自己编造内容
         背景知识:
         {query_result}
 
@@ -436,7 +450,7 @@ class Agent():
             model="qwen",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt_normal}
+                {"role": "user", "content": prompt_case}
             ],
             stream=True
         )
