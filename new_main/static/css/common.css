@@ -1,0 +1,11 @@
+/* static/common.css */
+body, button, input, select, textarea {
+  font: 12px "Microsoft Yahe";
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+
+}

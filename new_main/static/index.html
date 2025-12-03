@@ -1,0 +1,165 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <title>Document</title>
+  <link rel="stylesheet" href="static/css/reset.css">
+  <link rel="stylesheet" href="static/css/common.css">
+  <link rel="stylesheet" href="static/css/main.css">
+  <link rel="stylesheet" href="static/css/markdown.css">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<body>
+  <div class="container">
+    <div class="left-area">
+      <div class="top">
+        <a href="https://www.hzau.edu.cn/" >
+          <i class="logo"></i>
+        </a>
+        <div class="horizontal-line"></div>
+      </div>
+      <div class="middle">
+        <ul class="page-list">
+          <li class="item">
+            <i class="icon icon-star"></i>
+            <span class="desc active">教育大模型问答</span>
+          </li>
+          <li class="item">
+            <i class="icon icon-template"></i>
+            <span class="desc">用户问答示例</span>
+          </li>
+          <li class="item">
+            <i class="icon icon-file"></i>
+            <span class="desc">规章制度文件</span>
+          </li>
+          <li class="item">
+            <i class="icon icon-other"></i>
+            <span class="desc">其他内容待补充...</span>
+          </li>
+        </ul>
+      </div>
+      <div class="bottom">
+        <div class="left">
+          <img class="profile" src="static/images/profile_default.svg" alt="用户头像">
+          <span class="desc">系统默认用户</span>
+        </div>
+        <div class="right">
+          <i class="icon-exit"></i>
+        </div>
+      </div>
+    </div>
+    <div class="right-area">
+      <div class="top">
+        <h2 class="title">教育大模型v1.0</h2>
+        <div class="tool-bar">
+            <div class="search-area">
+              <i class="search-icon"></i>
+              <label>
+                <input class="search-input" type="search" placeholder="搜索华农官网信息">
+              </label>
+            </div>
+            <i class="enter-icon" ></i>
+            <img class="profile" src="static/images/profile_default.svg" alt="用户头像">
+        </div>
+      </div>
+      <div class="version"></div>
+      <div class="chat-box">
+        <div class="robot-chat-item chat-item">
+          <div class="robot-profile">
+            <i class="icon-robot-profile"></i>
+          </div>
+          <div class="text-container">
+            <div class="text-content">您好！我是华中农业大学研发的教育助手，请问有什么教育、管理、政策相关的疑惑？</div>
+          </div>
+        </div>
+        <!-- <div class="user-chat-item chat-item">
+          <div class="text-container">
+            <div class="text-content">人为什么要读研？</div>
+          </div>
+          <div class="user-profile">
+            <i class="icon-user-profile"></i>
+          </div>
+        </div>
+        <div class="robot-chat-item chat-item">
+          <div class="robot-profile">
+            <i class="icon-robot-profile"></i>
+          </div>
+          <div class="text-container">
+            <div class="text-content">读研是一个多维度的选择，它不仅仅是为了获得更深层次的专业知识，也是为了职业发展和个人成长。通过研究生学习，人们可以探索自己的研究兴趣，提高在特定领域的竞争力，同时也能够为社会带来新的贡献。此外，读研还能帮助个人拓宽视野，转换职业方向，甚至可能带来更好的薪酬待遇。简而言之，读研是一个综合提升个人能力和实现职业目标的过程。</div>
+          </div>
+        </div>
+        <div class="user-chat-item chat-item">
+          <div class="text-container">
+            <div class="text-content">人为什么要读研？</div>
+          </div>
+          <div class="user-profile">
+            <i class="icon-user-profile"></i>
+          </div>
+        </div>
+        <div class="robot-chat-item chat-item">
+          <div class="robot-profile">
+            <i class="icon-robot-profile"></i>
+          </div>
+          <div class="text-container">
+            <div class="text-content">读研是一个多维度的选择，它不仅仅是为了获得更深层次的专业知识，也是为了职业发展和个人成长。通过研究生学习，人们可以探索自己的研究兴趣，提高在特定领域的竞争力，同时也能够为社会带来新的贡献。此外，读研还能帮助个人拓宽视野，转换职业方向，甚至可能带来更好的薪酬待遇。简而言之，读研是一个综合提升个人能力和实现职业目标的过程。</div>
+          </div>
+        </div>
+        <div class="user-chat-item chat-item">
+          <div class="text-container">
+            <div class="text-content">人为什么要读研？</div>
+          </div>
+          <div class="user-profile">
+            <i class="icon-user-profile"></i>
+          </div>
+        </div>
+        <div class="robot-chat-item chat-item">
+          <div class="robot-profile">
+            <i class="icon-robot-profile"></i>
+          </div>
+          <div class="text-container">
+            <div class="text-content">读研是一个多维度的选择，它不仅仅是为了获得更深层次的专业知识，也是为了职业发展和个人成长。通过研究生学习，人们可以探索自己的研究兴趣，提高在特定领域的竞争力，同时也能够为社会带来新的贡献。此外，读研还能帮助个人拓宽视野，转换职业方向，甚至可能带来更好的薪酬待遇。简而言之，读研是一个综合提升个人能力和实现职业目标的过程。</div>
+          </div>
+        </div> -->
+        <!-- <div class="user-chat-item chat-item">
+          <div class="text-container">
+            <div class="text-content">人为什么要读研？</div>
+          </div>
+          <div class="user-profile">
+            <i class="icon-user-profile"></i>
+          </div>
+        </div>
+        <div class="robot-chat-item chat-item">
+          <div class="robot-profile">
+            <i class="icon-robot-profile"></i>
+          </div>
+          <div class="text-container">
+            <div class="text-content">读研是一个多维度的选择，它不仅仅是为了获得更深层次的专业知识，也是为了职业发展和个人成长。通过研究生学习，人们可以探索自己的研究兴趣，提高在特定领域的竞争力，同时也能够为社会带来新的贡献。此外，读研还能帮助个人拓宽视野，转换职业方向，甚至可能带来更好的薪酬待遇。简而言之，读研是一个综合提升个人能力和实现职业目标的过程。</div>
+          </div>
+        </div> -->
+      </div >
+      <div class="bottom">
+        <label>
+          <input class="text-input" type="text" placeholder="请在此输入问题..." >
+        </label>
+        <button class="send-button">发送问题</button>
+        <button class="stop-button" style="display: none;">停止回答</button>
+      </div>
+      <div class="warning">
+      <span >回答由AI大模型生成，可能带有主观性和随机性，请仔细甄别！</span>
+      </div>
+      <div class="footer">
+        <span class="copyright">© 2024 HuaZhong Agriculture University. All Rights Reserved.</span>
+        <a class="hzau-home" href="https://www.hzau.edu.cn/">访问华农官网></a>
+      </div>
+    </div>
+  </div> 
+
+  <script src="static/js/frame.js"> </script>
+  <script src="static/js/main.js"> </script>
+  
+</body>
+</html>

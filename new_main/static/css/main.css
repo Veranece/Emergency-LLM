@@ -1,0 +1,474 @@
+/* static/css/main.css */
+  .container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background: url(../images/bg.png);
+    background-size: 100% 100%;
+  }
+
+   .left-area {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0 ;
+    width: 310px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 17px 20px 4px rgba(112, 144, 176, 0.11);
+  }
+
+   .left-area .top .logo {
+    margin: 30px auto 27px ;
+    display: block;
+    width: 170px;
+    height: 43px;
+    background: url(../images/hzau_logo.png) no-repeat;
+    background-size: 100% 100%;
+  }
+
+   .left-area .top .horizontal-line {
+    border-top: 1px solid rgba(233, 237, 247, 1);
+    margin: 0 auto 20px ; /* 下留空，居中 */
+  }
+
+   .left-area .middle .page-list {
+    height: 200px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+
+   .left-area .middle .page-list .item {
+    position: relative;
+    margin-left: 40px;
+  }
+
+   .left-area .page-list .icon {
+    position: absolute;
+    left: 0;
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+
+   .left-area .page-list .icon-star {
+    background: url(../images/icon_star.png) no-repeat;
+  }
+
+   .left-area .page-list .icon-template {
+    background: url(../images/icon_template_dark.png) no-repeat;
+  }
+
+   .left-area .page-list .icon-file {
+    background: url(../images/icon_file_dark.png) no-repeat;
+  }
+
+   .left-area .page-list .icon-other {
+    background: url(../images/icon_other_dark.png) no-repeat;
+  }
+
+   .left-area .page-list .item .desc {
+    padding-left: 35px;
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(113, 128, 150, 1);
+    line-height: 20px;
+    vertical-align: top;
+  }
+
+   .left-area .page-list .item .desc.active {
+    color: #017230;
+  }
+
+   .left-area .bottom {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto auto 30px ;
+    width: 256px;
+    height: 62px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+  }
+
+   .left-area .bottom .left {
+    position: relative;
+    left: 15px;
+    height: 20px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+    color: rgba(27, 37, 89, 1);
+    text-align: center;
+    vertical-align: top;
+  }
+
+   .left-area .bottom .left .profile{
+     /* 必要 */
+    display: inline;
+    position: relative;
+    top: -8px;
+    width: 34px;
+    height: 34px;
+  }
+
+   .left-area .bottom .left .desc {
+
+    margin-left: 5px;
+  }
+
+  .left-area .bottom .right{
+    position: relative;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 31px;
+    border: 1px solid rgba(224, 229, 242, 1);
+  }
+
+  .left-area .bottom .right .icon-exit {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: block;
+    width: 13px;
+    height: 13px;
+    margin: auto auto ;
+    background: url(../images/icon_exit.png) no-repeat;
+  }
+
+   .right-area {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    flex: 1;
+  }
+
+   .right-area .top {
+    display: flex;
+    justify-content: space-between;
+
+  }
+
+  .right-area .top .title {
+    margin-top: 40px;
+    margin-left: 30px;
+    height: 45px;
+    line-height: 45px;
+    font-size: 28px;
+    font-weight: 400;
+    color: rgba(27, 37, 89, 1);
+    vertical-align: top;
+  }
+
+   .right-area .top .tool-bar {
+    padding: 0 10px;
+    margin-top: 40px;
+    margin-right: 35px;
+    width: 300px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 30px;
+    box-shadow: 14px 17px 20px 4px rgba(112, 144, 176, 0.08);
+  }
+
+   .right-area .top .tool-bar .search-area {
+    position: relative;
+    width: 205px;
+    height: 36px;
+    border-radius: 40px;
+    background: rgba(244, 247, 254, 1);
+  }
+
+  .right-area .top .tool-bar .search-area .search-icon {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 15px;
+    margin: auto 0 ;
+    display: block;
+    width: 11px;
+    height: 11px;
+    background: url(../images/icon_search.png) no-repeat;
+  }
+
+  .right-area .top .tool-bar .search-area .search-input{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 35px;
+    margin:  auto 0 ;
+    height: 20px;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: rgba(113, 128, 150, 1);
+  }
+
+  .right-area .top .tool-bar .enter-icon {
+    margin-right: 20px;
+    display: block;
+    width: 8px;
+    height: 12px;
+    background: url(../images/enter_icon.png) no-repeat;
+  }
+
+  .right-area .top .tool-bar .profile{
+    width: 45px;
+    height: 45px;
+  }
+
+  .right-area .chat-box {
+    padding: 0 50px;
+    margin: 20px auto 0;
+    width: 100%;
+    max-width: 80vw;
+    height: 100%;
+    max-height: 85%;
+    overflow-y: scroll;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(1, 114, 48, 0.3) transparent; /* Firefox */
+  }
+  
+  /* 自定义滚动条样式 - Webkit浏览器 */
+  .right-area .chat-box::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .right-area .chat-box::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .right-area .chat-box::-webkit-scrollbar-thumb {
+    background-color: rgba(1, 114, 48, 0.3);
+    border-radius: 10px;
+  }
+  
+  .right-area .chat-box::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(1, 114, 48, 0.5);
+  }
+
+  /* 用户提问样式 */
+  .right-area .chat-box .user-chat-item {
+    display: flex;
+    justify-content: right;
+    margin-bottom: 15px; /* 增加消息间的间距 */
+  }
+
+  .right-area .chat-box .user-chat-item .user-profile {
+    flex-shrink: 0; /* 不收缩 */
+    width: 33px;
+    height: 33px;
+  }
+
+  .right-area .chat-box .user-chat-item .user-profile .icon-user-profile {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: url("../images/profile_user_default.png") no-repeat;
+    background-size: 100% 100%;
+    border-radius: 50%;
+  }
+
+  .right-area .chat-box .user-chat-item .text-container {
+    margin-right: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+
+    background-color: rgb(244 244 244);
+    border-radius: 4px; /* 统一设置上下左右的圆角 */
+    box-shadow: rgba(200, 200, 200, 0.1) 0 21px 8px -10px;
+  }
+
+  .right-area .chat-box .user-chat-item .text-container .text-content {
+    position: relative;
+    padding: 10px 15px;
+    box-sizing: border-box;
+
+    color: rgb(31, 41, 55);
+
+    font-size: 16px;
+    line-height: 25px;
+    letter-spacing: .5px;
+    white-space: pre-wrap; /* 保留空格、换行符 */
+    overflow-wrap: break-word;
+  }
+
+  /* 大模型回答样式 */
+  .right-area .chat-box .robot-chat-item {
+    display: flex;
+    justify-content: left;
+    margin-bottom: 15px; /* 增加消息间的间距 */
+  }
+
+  .right-area .chat-box .robot-chat-item .robot-profile {
+    flex-shrink: 0; /* 不收缩 */
+    width: 33px;
+    height: 33px;
+  }
+
+  .right-area .chat-box .robot-chat-item .robot-profile .icon-robot-profile {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: url("../images/profile_robot_default.png") no-repeat;
+    background-size: 100% 100%;
+    border-radius: 50%;
+  }
+
+  .right-area .chat-box .robot-chat-item .text-container {
+    margin-right: 35px;
+    box-sizing: border-box;
+    margin-left: 20px;
+    display: flex;
+    justify-content: center;
+
+    background-color: rgb(235, 255, 243);
+    border: 0.8px solid rgb(1, 114, 48);
+    border-radius: 4px; /* 统一设置上下左右的圆角 */
+    box-shadow: rgba(149, 240, 187, 0.1) 0 21px 8px -10px;
+  }
+
+  .right-area .chat-box .robot-chat-item .text-container .text-content {
+    position: relative;
+    padding: 10px 15px;
+    box-sizing: border-box;
+
+    color: rgb(31, 41, 55);
+    font-size: 16px;
+    line-height: 25px;
+    letter-spacing: .5px;
+    white-space: normal; /* 从pre-wrap改为normal，不再保留原始换行符 */
+    overflow-wrap: break-word;
+  }
+
+  /* 统一样式 */
+  .right-area .chat-box .chat-item {
+    margin-top: 15px; /* 从20px减少为15px，使对话更紧凑 */
+    max-width: 90%;
+  }
+
+  .right-area .bottom {
+    margin-top: 5px;
+    display: flex;
+    align-self: center;
+    flex-wrap: nowrap;
+  }
+
+  .right-area .bottom .text-input {
+    padding-left: 20px;
+    width: 700px;
+    height: 50px;
+    font-size: 16px;
+    border-radius: 45px;
+    border: 2px solid rgba(226, 232, 240, 1);
+  }
+
+  .right-area .bottom .text-input:focus {
+    border: 2px solid rgb(30, 150, 80);
+    box-shadow: rgba(149, 240, 187, 0.1) 0 21px 8px -5px;
+  }
+
+  .right-area .bottom .send-button {
+    margin-left: 20px;
+    width: 140px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #FFF;
+    border-radius: 45px;
+    box-shadow: 0 21px 27px -10px rgba(149, 240, 187, 1);
+    background: linear-gradient(164.54deg, rgba(21, 89, 49, 1) 0%, rgba(1, 114, 48, 1) 92.71%);
+  }
+
+  .right-area .bottom .send-button:hover {
+    background: linear-gradient(164.54deg, rgba(21, 89, 49, 0.8) 0%, rgba(1, 114, 48, 0.8) 92.71%); /* 设置渐变背景色透明度为 80% */
+  }
+
+  .right-area .bottom .stop-button {
+    margin-left: 10px;
+    width: 140px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #FFF;
+    border-radius: 45px;
+    box-shadow: 0 21px 27px -10px rgba(240, 149, 149, 1);
+    background: linear-gradient(164.54deg, rgba(186, 40, 40, 1) 0%, rgba(139, 0, 0, 1) 92.71%);
+    cursor: pointer;
+  }
+
+  .right-area .bottom .stop-button:hover {
+    background: linear-gradient(164.54deg, rgba(186, 40, 40, 0.8) 0%, rgba(139, 0, 0, 0.8) 92.71%);
+  }
+
+  .right-area .warning {
+    margin: 3px auto 10px;
+    width: 500px;
+    align-self: center;
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+
+  .right-area .footer {
+    margin: 0 35px 10px 10px;
+    display: flex;
+    justify-content: space-between;
+    height: 24px;
+    line-height: 24px;
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(113, 128, 150, 1);
+    vertical-align: top;
+  }
+
+
+  /* CSS 样式中的加载动画 */
+.loading-animation::after {
+    content: '...';
+    animation: loadingDots 1s steps(3, end) infinite;
+}
+
+@keyframes loadingDots {
+    0%, 20% {
+        content: ' ';
+    }
+    40% {
+        content: '.';
+    }
+    60% {
+        content: '..';
+    }
+    100% {
+        content: '...';
+    }
+}
+
+/* 停止生成提示样式 */
+.stop-generation-notice {
+    margin-top: 8px;
+    padding: 4px 10px;
+    color: #a94442;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    font-size: 13px;
+    display: inline-block;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+

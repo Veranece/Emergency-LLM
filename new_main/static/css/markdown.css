@@ -1,0 +1,115 @@
+/* static/css/markdown.css */
+.markdown-content {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+.markdown-content p {
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+.markdown-content h1 {
+  font-size: 2em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+}
+.markdown-content h2 {
+  font-size: 1.5em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3em;
+}
+.markdown-content h3 {
+  font-size: 1.25em;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.markdown-content h4, .markdown-content h5, .markdown-content h6 {
+  font-size: 1em;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.markdown-content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 3px;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+.markdown-content pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  margin-bottom: 16px;
+}
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+.markdown-content ul, .markdown-content ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+.markdown-content ul {
+  list-style-type: disc !important;
+}
+.markdown-content ol {
+  list-style-type: decimal !important;
+}
+.markdown-content ul li, .markdown-content ol li {
+  list-style: inherit !important;
+  margin-bottom: 4px;
+  display: list-item !important;
+}
+.markdown-content ul ul, .markdown-content ol ul {
+  list-style-type: circle !important;
+  margin-top: 4px;
+}
+.markdown-content ul ul ul, .markdown-content ol ul ul, 
+.markdown-content ol ol ul, .markdown-content ul ol ul {
+  list-style-type: square !important;
+}
+.markdown-content li > p {
+  margin-bottom: 4px;
+}
+.markdown-content blockquote {
+  padding: 0 1em;
+  color: #6a737d;
+  border-left: 0.25em solid #dfe2e5;
+  margin-bottom: 16px;
+}
+.markdown-content table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  margin-bottom: 16px;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+.markdown-content table th, .markdown-content table td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+.markdown-content table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+.markdown-content table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+} 

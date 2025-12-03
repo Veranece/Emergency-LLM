@@ -2,10 +2,12 @@
 __pycache__/
 *.py[codz]
 *$py.class
+/new_main/resources*
 
 # C extensions
 *.so
-
+vdb/
+resource/
 # Distribution / packaging
 .Python
 build/
