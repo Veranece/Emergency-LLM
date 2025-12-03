@@ -98,7 +98,7 @@ embedding_model = HuggingFaceEmbeddings(
     encode_kwargs={"normalize_embeddings": True}
 )
 
-dir_path = '/home/liziwei/Emergency-LLM/backend/resource/data'
+dir_path = '/home/liziwei/Emergency-LLM/backend/resource'
 all_documents = []
 
 for foldername, subfolders, filenames in os.walk(dir_path):
