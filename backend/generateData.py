@@ -6,6 +6,263 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import Docx2txtLoader, TextLoader, PyPDFLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+from docx import Document as DocxDocument
+from docx.document import Document as _Document
+from docx.oxml.text.paragraph import CT_P
+from docx.oxml.table import CT_Tbl
+from docx.table import _Cell, Table
+from docx.text.paragraph import Paragraph
+
+def iter_block_items(parent):
+    """
+    Yield each paragraph and table child within *parent*, in document order.
+    Each returned value is an instance of either Table or Paragraph.
+    """
+    if isinstance(parent, _Document):
+        parent_elm = parent.element.body
+    elif isinstance(parent, _Cell):
+        parent_elm = parent._tc
+    else:
+        raise ValueError("something's not right")
+
+    for child in parent_elm.iterchildren():
+        if isinstance(child, CT_P):
+            yield Paragraph(child, parent)
+        elif isinstance(child, CT_Tbl):
+            yield Table(child, parent)
+
+# =======================
+# DOCX表格处理器
+# =======================
+def process_docx_tables_as_documents(docx_path, doc_type="Unknown"):
+    """
+    处理DOCX文件：按顺序读取，表格作为整体（含前后200字符上下文）
+
+    策略：
+    1. 按顺序读取文档元素
+    2. 记录段落文本作为表格名称
+    3. 文本累积到800字符切分
+    4. 遇到表格时，先保存当前累积的文本（即使<800），然后将表格（含名称）作为单独的完整块，
+       并且为每个表格添加前后200字符上下文
+
+    Args:
+        docx_path: DOCX文件路径
+        doc_type: 文档类型
+
+    Returns:
+        文档列表（表格+分块文本）
+    """
+    documents = []
+
+    try:
+        doc = DocxDocument(docx_path)
+
+        # 第一遍：收集完整内容，用于提取表格上下文
+        full_content_parts = []
+        element_positions = []  # 记录每个元素在完整内容中的位置
+
+        current_pos = 0
+        element_idx_table = 0
+
+        for element in doc.element.body:
+            if isinstance(element, CT_P):
+                para = element
+                text = para.text.strip()
+                if text:
+                    full_content_parts.append(('text', text))
+                    element_positions.append(('paragraph', current_pos, len(text)))
+                    current_pos += len(text) + 1  # +1 for newline
+
+            elif isinstance(element, CT_Tbl):
+                table = doc.tables[element_idx_table]
+                table_content = extract_table_content(table)
+                full_content_parts.append(('table', table_content))
+                element_positions.append(('table', current_pos, len(table_content)))
+                current_pos += len(table_content) + 1
+                element_idx_table += 1
+
+        # 构建完整内容字符串
+        full_content = ""
+        for content_type, content in full_content_parts:
+            full_content += content + "\n"
+
+        # 第二遍：按顺序处理，生成最终文档
+        current_text_chunk = ""
+        table_count = 0
+        text_chunk_count = 0
+        last_paragraph_text = ""  # 记录最后一段的文本，作为表格名称
+
+        element_idx = 0
+
+        for element in doc.element.body:
+            if isinstance(element, CT_P):
+                para = element
+                text = para.text.strip()
+                if text:
+                    last_paragraph_text = text  # 更新最后段落文本
+                    current_text_chunk += text + "\n"
+
+                    # 检查当前文本块是否超过800字符
+                    while len(current_text_chunk) >= 800:
+                        text_chunk_count += 1
+                        documents.append(Document(
+                            page_content=current_text_chunk[:800],
+                            metadata={
+                                "source": docx_path,
+                                "type": doc_type,
+                                "chunk_index": text_chunk_count,
+                                "content_type": "text_content",
+                                "length": 800
+                            }
+                        ))
+                        current_text_chunk = current_text_chunk[800:]
+
+            elif isinstance(element, CT_Tbl):
+                table = doc.tables[element_idx]
+                element_idx += 1
+
+                # 4. 遇到表格时，先保存当前累积的文本（即使<800）
+                if current_text_chunk:
+                    text_chunk_count += 1
+                    documents.append(Document(
+                        page_content=current_text_chunk,
+                        metadata={
+                            "source": docx_path,
+                            "type": doc_type,
+                            "chunk_index": text_chunk_count,
+                            "content_type": "text_content",
+                            "length": len(current_text_chunk)
+                        }
+                    ))
+                    current_text_chunk = ""
+
+                # 处理表格作为单独的完整块，包含前后200字符上下文
+                table_count += 1
+                table_content = extract_table_content(table)
+
+                # 构建完整的表格内容（含上下文）
+                full_table_content = ""
+
+                # 找到当前表格在完整内容中的位置
+                table_pos_info = None
+                for elem_type, pos, length in element_positions:
+                    if elem_type == 'table':
+                        table_pos_info = (pos, length)
+                        break
+
+                if table_pos_info:
+                    table_pos, table_length = table_pos_info
+
+                    # 添加前200字符上下文
+                    pre_start = max(0, table_pos - 200)
+                    pre_context = full_content[pre_start:table_pos].strip()
+                    if pre_context and len(pre_context) > 0:
+                        # 清理前上下文（移除多余的换行符）
+                        pre_context = pre_context.replace('\n', ' ').strip()
+                        if pre_context:
+                            full_table_content += f"[前文上下文]\n{pre_context[-200:]}\n\n"
+
+                    # 添加表格名称
+                    if last_paragraph_text:
+                        full_table_content += f"表格名称：{last_paragraph_text}\n\n"
+
+                    # 添加表格内容
+                    full_table_content += table_content
+
+                    # 添加后200字符上下文
+                    post_start = table_pos + table_length
+                    post_end = min(len(full_content), post_start + 200)
+                    post_context = full_content[post_start:post_end].strip()
+                    if post_context and len(post_context) > 0:
+                        # 清理后上下文
+                        post_context = post_context.replace('\n', ' ').strip()
+                        if post_context:
+                            full_table_content += f"\n\n[后文上下文]\n{post_context[:200]}"
+
+                else:
+                    # 如果找不到位置信息，回退到简单版本
+                    if last_paragraph_text:
+                        full_table_content += f"表格名称：{last_paragraph_text}\n\n"
+                    full_table_content += table_content
+
+                # 创建表格元数据
+                metadata = {
+                    "source": docx_path,
+                    "type": doc_type,
+                    "table_index": table_count,
+                    "table_name": last_paragraph_text,
+                    "content_type": "structured_table",
+                    "rows": len(table.rows),
+                    "cols": len(table.columns) if hasattr(table, 'columns') and table.columns else len(table.rows[0].cells) if table.rows else 0,
+                    "has_context": True,
+                    "context_chars": 200
+                }
+
+                # 创建Document对象
+                documents.append(Document(
+                    page_content=full_table_content,
+                    metadata=metadata
+                ))
+
+        # 添加任何剩余的文本
+        if current_text_chunk:
+            text_chunk_count += 1
+            documents.append(Document(
+                page_content=current_text_chunk,
+                metadata={
+                    "source": docx_path,
+                    "type": doc_type,
+                    "chunk_index": text_chunk_count,
+                    "content_type": "text_content",
+                    "length": len(current_text_chunk)
+                }
+            ))
+
+    except Exception as e:
+        print(f"DOCX表格处理失败: {docx_path}, 原因: {e}")
+        # 回退到传统处理
+        try:
+            loader = Docx2txtLoader(docx_path)
+            docs = loader.load_and_split(text_splitter)
+
+            for doc in docs:
+                doc.metadata["source"] = docx_path
+                doc.metadata["type"] = doc_type
+                documents.append(doc)
+        except Exception as e2:
+            print(f"传统DOCX处理也失败: {docx_path}, 原因: {e2}")
+
+    return documents
+
+
+
+def extract_table_content(table):
+    """
+    提取表格内容为字符串格式
+
+    Args:
+        table: docx表格对象
+
+    Returns:
+        表格内容的字符串表示
+    """
+    content_lines = []
+
+    # 添加表格数据（不单独处理表头，因为规格书中的表格可能没有明确的表头）
+    for row_idx, row in enumerate(table.rows):
+        row_data = []
+        for cell in row.cells:
+            # 处理单元格内容，保留换行符
+            cell_text = cell.text.strip()
+            if not cell_text:
+                cell_text = "[空]"
+            row_data.append(cell_text)
+
+        content_lines.append(f"行{row_idx + 1}: {' | '.join(row_data)}")
+
+    # 返回完整的表格内容
+    return "\n".join(content_lines)
 
 # =======================
 # OCR 初始化
@@ -123,8 +380,13 @@ for foldername, subfolders, filenames in os.walk(dir_path):
             print("加载 PDF:", file_path)
             loader = PyPDFLoader(file_path)
         elif lower_name.endswith(".docx"):
-            print("加载 DOCX:", file_path)
-            loader = Docx2txtLoader(file_path)
+            print("处理 DOCX 表格:", file_path)
+            # 特殊处理：将表格作为整体文档处理
+            docs = process_docx_tables_as_documents(file_path, doc_type)
+            # 直接添加到all_documents，不使用loader
+            if docs:
+                all_documents.extend(docs)
+            continue  # 跳过下面的loader处理
         elif lower_name.endswith(".txt"):
             # 尝试多种编码加载 TXT 文件
             encodings = ['utf-8', 'gbk', 'gb2312', 'gb18030', 'latin1']
@@ -150,14 +412,37 @@ for foldername, subfolders, filenames in os.walk(dir_path):
         elif lower_name.endswith((".wps", ".doc")):
             out_file = os.path.splitext(file_path)[0] + ".docx"
             try:
+                # 步骤1：转换文件
                 subprocess.run(
                     ["libreoffice", "--headless", "--convert-to", "docx", "--outdir", foldername, file_path],
                     check=True
                 )
-                loader = Docx2txtLoader(out_file)
-                os.remove(file_path)
+
+                # 步骤2：处理转换后的文件
+                docs = process_docx_tables_as_documents(out_file, doc_type)
+
+                # 步骤3：只有在成功处理的情况下才添加到文档列表并删除原始文件
+                if docs:
+                    all_documents.extend(docs)
+                    print(f"✅ 成功处理文件: {filename} -> {len(docs)} 个文档")
+
+                    # 可选：删除原始DOC文件（现在默认保留）
+                    # os.remove(file_path)
+                else:
+                    print(f"⚠️  文件处理完成但未生成文档: {filename}")
+
+                # 保留转换后的DOCX文件作为备份
+                continue  # 跳过下面的loader处理
+
             except Exception as e:
-                print(f"文件处理失败: {file_path}, 原因: {e}")
+                print(f"❌ 文件处理失败，保留原始文件: {file_path}, 原因: {e}")
+                # 如果转换失败，尝试清理可能产生的临时文件
+                if os.path.exists(out_file):
+                    try:
+                        os.remove(out_file)
+                        print(f"清理临时文件: {out_file}")
+                    except:
+                        pass
                 continue
         else:
             print("未知格式文件，跳过:", file_path)

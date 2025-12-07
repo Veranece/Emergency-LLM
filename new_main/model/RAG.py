@@ -428,10 +428,11 @@ class Agent():
         # print("query_result:",query_result)
         system_prompt = "你是应急管理领域的专业顾问，请根据用户提供的上下文回答问题，回答要专业、条理清晰。只根据上下文回答，不要自己编造内容。"
         prompt_normal = f"""
-        1.请结合以下背景知识，回答用户问题，回答要专业、条理清晰.
-        2.如果上下文不够准确，请返回 ‘我不确定 / 没有足够信息’
-        3.只总结和问题直接相关的内容，一些并不重要的内容无需总结。
-        4.不要自己编造内容
+        1.请结合以下背景知识，回答用户问题，回答要专业、条理清晰。
+        2.结构化数据可以以markdown格式返回。
+        3.如果上下文不够准确，请返回 ‘我不确定 / 没有足够信息’。
+        4.只总结和问题直接相关的内容，一些并不重要的内容无需总结。
+        5.不要自己编造内容。
         问题: {query}\n
         背景知识:\n{query_result}
         """
@@ -450,7 +451,7 @@ class Agent():
             model="qwen",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt_case}
+                {"role": "user", "content": prompt_normal}
             ],
             stream=True
         )

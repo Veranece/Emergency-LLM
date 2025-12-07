@@ -1,0 +1,26 @@
+[33mcommit beb908a3f13d44963e9fe833cc0671e97a5ed12f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 0cc510f 04fe1b3
+Author: ZiweiLi <1440832899@qq.com>
+Date:   Wed Dec 3 10:37:20 2025 +0800
+
+    Merge pull request #1 from lyc8613300/main 前端
+    
+    前端
+
+[33mcommit 04fe1b3b450da402fd81bcb8ed22858f3d9ab7cb[m
+Author: lyc8613300 <15897705172@qq.com>
+Date:   Wed Nov 26 17:03:57 2025 +0800
+
+    前端外观美化
+
+[33mcommit 860fca9c36149ef01c612cb678f73d7a179ed733[m
+Author: lyc8613300 <15897705172@qq.com>
+Date:   Wed Nov 26 15:13:12 2025 +0800
+
+    Initial commit: Emergency AI Management System
+
+[33mcommit 0cc510f2b0ee2b7572f54d609fade4e617e3242b[m
+Author: ZiweiLi <1440832899@qq.com>
+Date:   Mon Nov 10 10:17:15 2025 +0800
+
+    Initial commit

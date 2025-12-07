@@ -3,7 +3,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 /new_main/resources*
-
+/testEme
 # C extensions
 *.so
 vdb/
