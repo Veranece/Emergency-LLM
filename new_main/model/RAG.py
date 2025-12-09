@@ -110,7 +110,7 @@ class Agent():
     def __init__(self):
         
         self.documents = Chroma(
-            persist_directory="/home/liziwei/Emergency-LLM/backend/vdb",
+            persist_directory="/home/liziwei/Emergency-LLM/new_main/model/vdb",
             embedding_function=embedding_model
         )
         
@@ -337,7 +337,7 @@ class Agent():
         
         # 排序并返回 top-5
         sorted_results = sorted(final_results, key=lambda x: x["score"], reverse=True)
-        return sorted_results[:2]
+        return sorted_results[:3]
 
     def create_original_query(self,original_query):
         query = original_query
@@ -429,7 +429,7 @@ class Agent():
         system_prompt = "你是应急管理领域的专业顾问，请根据用户提供的上下文回答问题，回答要专业、条理清晰。只根据上下文回答，不要自己编造内容。"
         prompt_normal = f"""
         1.请结合以下背景知识，回答用户问题，回答要专业、条理清晰。
-        2.结构化数据可以以markdown格式返回。
+        2.，一个表格内容全部返回，不要只返回部分内容。
         3.如果上下文不够准确，请返回 ‘我不确定 / 没有足够信息’。
         4.只总结和问题直接相关的内容，一些并不重要的内容无需总结。
         5.不要自己编造内容。

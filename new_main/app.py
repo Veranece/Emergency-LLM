@@ -31,6 +31,8 @@ CORS(app, resources={
             "http://127.0.0.1:5173",
             "http://localhost:80",
             "http://127.0.0.1:80",
+            "http://localhost:5888",
+            "http://127.0.0.1:5888",
             "http://shizi.hzau.edu.cn:5001",
         ],
         "methods": ["GET", "POST", "OPTIONS"],
@@ -47,6 +49,10 @@ if not os.path.exists(RESOURCES_FOLDER):
 def serve_index():
     return send_from_directory('static', 'index.html')
 
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
+
 
 @app.route('/getMessage', methods=['POST'])
 def get_message():
@@ -60,16 +66,23 @@ def get_message():
         def generate():
             error_occurred = False
             error_message = ""
+            full_response = ""  # 收集完整响应用于调试
             try:
                 for chunk in response_generator:
                     # 从 ChatCompletionChunk 中提取内容（只提取 content，跳过 reasoning_content）
                     chunk_content = None
-                    
+
                     if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
                         delta = chunk.choices[0].delta
                         # 只获取 content（最终输出内容），忽略 reasoning_content（思考过程）
                         if hasattr(delta, 'content') and delta.content is not None:
                             chunk_content = delta.content
+                            full_response += chunk_content  # 收集完整响应
+
+                        # 调试：打印reasoning_content（如果有的话）
+                        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                            # 可以选择是否输出思考过程，这里暂时跳过
+                            pass
                     
                     # 只有当成功提取到内容时才输出
                     if chunk_content is not None and chunk_content != '':
@@ -82,6 +95,26 @@ def get_message():
                 # 如果检测到错误，抛出异常以便外层捕获
                 if error_occurred:
                     raise Exception(error_message)
+
+                # 调试：打印完整响应内容
+                if full_response:
+                    print("=== AI完整响应内容 ===")
+                    print(repr(full_response))
+                    print("=== 响应内容结束 ===")
+
+                    # 检查markdown特征
+                    markdown_features = {
+                        '标题': any(f'{"#"*i} ' in full_response for i in range(1, 7)),
+                        '粗体': '**' in full_response,
+                        '斜体': '*' in full_response and not full_response.count('*') % 2 == 0,
+                        '列表': any(marker in full_response for marker in ['- ', '* ', '1. ', '2. ']),
+                        '代码': '`' in full_response,
+                        '表格': '|' in full_response,
+                    }
+                    print("Markdown特征检测:")
+                    for feature, present in markdown_features.items():
+                        print(f"  {feature}: {'✅' if present else '❌'}")
+
             except Exception as e:
                 error_msg = str(e)
                 print(f"流式响应出错: {error_msg}")
@@ -221,6 +254,10 @@ def get_files():
 @app.route('/test')
 def serve_test():
     return send_from_directory('static', 'test.html')
+
+@app.route('/markdown-test')
+def serve_markdown_test():
+    return send_from_directory('static', 'markdown_test.html')
 # 新增接口：获取文件下载链接
 @app.route('/api/files/download', methods=['POST'])
 def get_file_download_url():

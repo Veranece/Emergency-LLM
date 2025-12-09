@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown渲染测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Marked.js用于Markdown渲染 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/lib/marked.umd.min.js"></script>
+    <style>
+        /* 表格样式 */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        /* 代码块样式 */
+        pre {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+        
+        code {
+            background-color: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        /* 列表样式 */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        /* 标题样式 */
+        h1, h2, h3, h4, h5, h6 {
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.75rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.25rem; }
+        h5 { font-size: 1.125rem; }
+        h6 { font-size: 1rem; }
+        
+        /* 段落样式 */
+        p {
+            margin: 1rem 0;
+            line-height: 1.6;
+        }
+        
+        /* 强调样式 */
+        strong {
+            font-weight: 600;
+        }
+        
+        em {
+            font-style: italic;
+        }
+        
+        /* 引用样式 */
+        blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">Markdown渲染测试</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 输入区域 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4">测试文本输入</h2>
+                <textarea id="markdown-input" class="w-full h-96 p-4 border border-gray-300 rounded-lg font-mono text-sm" placeholder="在这里输入Markdown文本...">
+# 应急管理知识测试
+
+## 基本信息表格
+
+| 项目 | 内容 | 备注 |
+|------|------|------|
+| 应急等级 | 一级 | 最高等级 |
+| 响应时间 | 15分钟 | 黄金时间 |
+| 疏散范围 | 3公里 | 安全距离 |
+| 联系电话 | 119 | 消防救援 |
+
+## 应急处置流程
+
+1. **立即报警**
+   - 拨打119消防电话
+   - 说明具体位置和情况
+
+2. **现场控制**
+   - 设置警戒线
+   - 疏散无关人员
+
+3. **专业救援**
+   - 等待专业救援队伍
+   - 配合救援工作
+
+## 注意事项
+
+- 保持冷静，不要慌张
+- 听从现场指挥人员安排
+- 注意自身安全
+
+> **重要提醒**：在任何紧急情况下，生命安全永远是第一位的。
+
+## 代码示例
+
+```python
+def emergency_response(level):
+    if level == "critical":
+        return "立即启动一级响应"
+    elif level == "high":
+        return "启动二级响应"
+    else:
+        return "常规处理"
+```
+
+## 联系方式
+
+**紧急联系电话：**
+- 火警：119
+- 匪警：110  
+- 急救：120
+
+*最后更新时间：2024年12月*
+                </textarea>
+                <button id="render-btn" class="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    渲染预览
+                </button>
+            </div>
+            
+            <!-- 渲染结果区域 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4">渲染结果</h2>
+                <div id="markdown-output" class="border border-gray-300 rounded-lg p-4 min-h-96 overflow-auto">
+                    <p class="text-gray-500">点击"渲染预览"查看结果</p>
+                </div>
+                
+                <div class="mt-4">
+                    <h3 class="text-lg font-medium mb-2">调试信息</h3>
+                    <div id="debug-info" class="bg-gray-100 p-3 rounded text-sm font-mono">
+                        等待渲染...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 测试用例 -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">预设测试用例</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="test-case bg-gray-100 p-4 rounded-lg text-left hover:bg-gray-200 transition-colors" data-test="table">
+                    <h3 class="font-medium">表格测试</h3>
+                    <p class="text-sm text-gray-600">测试表格渲染</p>
+                </button>
+                <button class="test-case bg-gray-100 p-4 rounded-lg text-left hover:bg-gray-200 transition-colors" data-test="list">
+                    <h3 class="font-medium">列表测试</h3>
+                    <p class="text-sm text-gray-600">测试有序和无序列表</p>
+                </button>
+                <button class="test-case bg-gray-100 p-4 rounded-lg text-left hover:bg-gray-200 transition-colors" data-test="code">
+                    <h3 class="font-medium">代码测试</h3>
+                    <p class="text-sm text-gray-600">测试代码块和行内代码</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 复制主应用的渲染函数
+        function formatAIResponse(text) {
+            try {
+                // 首先检查marked是否可用
+                if (typeof marked !== 'undefined') {
+                    console.log('使用Marked.js渲染Markdown');
+                    
+                    // 配置marked选项
+                    marked.setOptions({
+                        breaks: true,
+                        gfm: true,
+                        tables: true,
+                        sanitize: false
+                    });
+                    
+                    return marked.parse(text);
+                }
+
+                // 如果marked不可用，使用简单的正则表达式处理
+                console.log('Marked.js不可用，使用基础渲染');
+                return basicMarkdownRender(text);
+
+            } catch (error) {
+                console.error('渲染错误:', error);
+                return escapeHTML(text).replace(/\n/g, '<br>');
+            }
+        }
+        
+        function basicMarkdownRender(text) {
+            let html = escapeHTML(text);
+
+            // 简单的Markdown处理
+            html = html.replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>');
+            html = html.replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-5 mb-3">$1</h2>');
+            html = html.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mt-6 mb-4">$1</h1>');
+
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+
+            html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 rounded text-sm">$1</code>');
+
+            html = html.replace(/^\- (.*$)/gm, '<li class="ml-4">• $1</li>');
+            html = html.replace(/^\d+\. (.*$)/gm, '<li class="ml-4">$1</li>');
+
+            // 处理换行
+            html = html.replace(/\n\n/g, '</p><p class="mb-3">');
+            html = html.replace(/\n/g, '<br>');
+
+            return '<p class="mb-3">' + html + '</p>';
+        }
+        
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[m];
+            });
+        }
+        
+        // 渲染按钮事件
+        document.getElementById('render-btn').addEventListener('click', function() {
+            const input = document.getElementById('markdown-input').value;
+            const output = document.getElementById('markdown-output');
+            const debugInfo = document.getElementById('debug-info');
+            
+            try {
+                const rendered = formatAIResponse(input);
+                output.innerHTML = rendered;
+                
+                // 调试信息
+                const debugData = {
+                    'Marked.js可用': typeof marked !== 'undefined',
+                    '输入长度': input.length,
+                    '包含表格': input.includes('|'),
+                    '包含代码块': input.includes('```'),
+                    '包含列表': /^[\-\*\+\d+\.]\s/.test(input),
+                    '渲染时间': new Date().toLocaleTimeString()
+                };
+                
+                debugInfo.innerHTML = Object.entries(debugData)
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join('<br>');
+                    
+            } catch (error) {
+                output.innerHTML = `<div class="text-red-500">渲染错误: ${error.message}</div>`;
+                debugInfo.innerHTML = `错误: ${error.message}`;
+            }
+        });
+        
+        // 测试用例
+        const testCases = {
+            table: `# 表格测试
+
+| 列1 | 列2 | 列3 |
+|-----|-----|-----|
+| 数据1 | 数据2 | 数据3 |
+| 数据4 | 数据5 | 数据6 |
+
+这是一个简单的表格测试。`,
+            
+            list: `# 列表测试
+
+## 无序列表
+- 项目1
+- 项目2
+  - 子项目1
+  - 子项目2
+- 项目3
+
+## 有序列表
+1. 第一步
+2. 第二步
+3. 第三步`,
+            
+            code: `# 代码测试
+
+## 行内代码
+这是一个 \`console.log()\` 函数调用。
+
+## 代码块
+\`\`\`javascript
+function hello() {
+    console.log("Hello, World!");
+}
+\`\`\`
+
+## Python代码
+\`\`\`python
+def greet(name):
+    return f"Hello, {name}!"
+\`\`\``
+        };
+        
+        // 测试用例按钮事件
+        document.querySelectorAll('.test-case').forEach(button => {
+            button.addEventListener('click', function() {
+                const testType = this.dataset.test;
+                const input = document.getElementById('markdown-input');
+                input.value = testCases[testType];
+                
+                // 自动渲染
+                document.getElementById('render-btn').click();
+            });
+        });
+        
+        // 页面加载时自动渲染默认内容
+        window.addEventListener('load', function() {
+            document.getElementById('render-btn').click();
+        });
+    </script>
+</body>
+</html>
